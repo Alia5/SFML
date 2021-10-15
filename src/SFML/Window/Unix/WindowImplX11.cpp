@@ -573,13 +573,17 @@ m_lastInputTime  (0)
     int height = mode.height;
 
     // Choose the visual according to the context settings
-    XVisualInfo visualInfo = ContextType::selectBestVisual(m_display, mode.bitsPerPixel, settings);
+    // XVisualInfo visualInfo = ContextType::selectBestVisual(m_display, mode.bitsPerPixel, settings);
+
+    XVisualInfo visualInfo;
+    XMatchVisualInfo(m_display, m_screen, 32, TrueColor, &visualInfo);
 
     // Define the window attributes
     XSetWindowAttributes attributes;
     attributes.colormap = XCreateColormap(m_display, DefaultRootWindow(m_display), visualInfo.visual, AllocNone);
     attributes.event_mask = eventMask;
     attributes.override_redirect = (m_fullscreen && !ewmhSupported()) ? True : False;
+    attributes.border_pixel = 0;
 
     m_window = XCreateWindow(m_display,
                              DefaultRootWindow(m_display),
@@ -589,7 +593,7 @@ m_lastInputTime  (0)
                              visualInfo.depth,
                              InputOutput,
                              visualInfo.visual,
-                             CWEventMask | CWOverrideRedirect | CWColormap,
+                             CWEventMask | CWOverrideRedirect | CWColormap | CWBorderPixel,
                              &attributes);
 
     if (!m_window)
